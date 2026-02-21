@@ -1,1 +1,16 @@
 project_id = "tmtvuqalqtdcrqteuiyo"
+
+[functions.song-api]
+verify_jwt = false
+
+[functions.verse-api]
+verify_jwt = false
+
+[functions.schedule-api]
+verify_jwt = false
+
+[functions.history-api]
+verify_jwt = false
+
+[functions.sthothira-api]
+verify_jwt = false

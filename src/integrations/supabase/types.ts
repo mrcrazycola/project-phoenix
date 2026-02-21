@@ -14,13 +14,166 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      schedule: {
+        Row: {
+          bookname: string | null
+          booknum: number | null
+          chapternumber: number | null
+          id: number
+          versenumber: number | null
+        }
+        Insert: {
+          bookname?: string | null
+          booknum?: number | null
+          chapternumber?: number | null
+          id?: number
+          versenumber?: number | null
+        }
+        Update: {
+          bookname?: string | null
+          booknum?: number | null
+          chapternumber?: number | null
+          id?: number
+          versenumber?: number | null
+        }
+        Relationships: []
+      }
+      schedule_song: {
+        Row: {
+          id: number
+          name: string
+        }
+        Insert: {
+          id?: number
+          name: string
+        }
+        Update: {
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      song: {
+        Row: {
+          id: number
+          name: string
+          song_english: string | null
+          song_tamil: string | null
+          url: string | null
+        }
+        Insert: {
+          id?: number
+          name: string
+          song_english?: string | null
+          song_tamil?: string | null
+          url?: string | null
+        }
+        Update: {
+          id?: number
+          name?: string
+          song_english?: string | null
+          song_tamil?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
+      song_history: {
+        Row: {
+          id: number
+          songname: string
+          timestamp: string
+        }
+        Insert: {
+          id?: number
+          songname: string
+          timestamp?: string
+        }
+        Update: {
+          id?: number
+          songname?: string
+          timestamp?: string
+        }
+        Relationships: []
+      }
+      sthothira_baligal: {
+        Row: {
+          id: number
+          sthothira_baligal_list: string | null
+        }
+        Insert: {
+          id: number
+          sthothira_baligal_list?: string | null
+        }
+        Update: {
+          id?: number
+          sthothira_baligal_list?: string | null
+        }
+        Relationships: []
+      }
+      verse_history: {
+        Row: {
+          bookname: string | null
+          booknum: number | null
+          chapnum: number | null
+          id: number
+          timestamp: string
+          versenum: number | null
+        }
+        Insert: {
+          bookname?: string | null
+          booknum?: number | null
+          chapnum?: number | null
+          id?: number
+          timestamp?: string
+          versenum?: number | null
+        }
+        Update: {
+          bookname?: string | null
+          booknum?: number | null
+          chapnum?: number | null
+          id?: number
+          timestamp?: string
+          versenum?: number | null
+        }
+        Relationships: []
+      }
+      words: {
+        Row: {
+          bookName: string
+          bookNum: number
+          chNum: number
+          id: number
+          page_no: string | null
+          verseNum: number
+          word: string | null
+        }
+        Insert: {
+          bookName: string
+          bookNum: number
+          chNum: number
+          id?: number
+          page_no?: string | null
+          verseNum: number
+          word?: string | null
+        }
+        Update: {
+          bookName?: string
+          bookNum?: number
+          chNum?: number
+          id?: number
+          page_no?: string | null
+          verseNum?: number
+          word?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       [_ in never]: never

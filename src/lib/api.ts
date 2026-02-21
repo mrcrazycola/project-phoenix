@@ -1,148 +1,131 @@
-import { TAMIL_BOOKS } from "./bible-data";
+import { supabase } from "@/integrations/supabase/client";
 
-// Configure this to point to your PHP backend server
-const API_BASE = ""; // Same-origin, or set to your PHP server URL like "http://192.168.29.170/bible"
+const PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID;
 
-interface ApiOptions {
-  action: string;
-  [key: string]: string | number | boolean | undefined;
-}
-
-export async function apiPost(data: ApiOptions): Promise<any> {
-  const formData = new FormData();
-  Object.entries(data).forEach(([key, value]) => {
-    if (value !== undefined) {
-      formData.append(key, String(value));
-    }
-  });
-
-  const response = await fetch(API_BASE, {
+async function invokeFunction(functionName: string, body: Record<string, unknown>): Promise<Response> {
+  const url = `https://${PROJECT_ID}.supabase.co/functions/v1/${functionName}`;
+  const response = await fetch(url, {
     method: "POST",
-    body: formData,
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    },
+    body: JSON.stringify(body),
   });
-
   return response;
 }
 
-export async function apiPostJson(data: ApiOptions): Promise<any> {
-  const response = await apiPost(data);
-  return response.json();
+async function invokeJson(functionName: string, body: Record<string, unknown>): Promise<any> {
+  const res = await invokeFunction(functionName, body);
+  return res.json();
 }
 
-export async function apiPostText(data: ApiOptions): Promise<string> {
-  const response = await apiPost(data);
-  return response.text();
+async function invokeText(functionName: string, body: Record<string, unknown>): Promise<string> {
+  const res = await invokeFunction(functionName, body);
+  return res.text();
 }
 
 // Song APIs
 export const songApi = {
   search: (searchTerm: string, inBetween: boolean) =>
-    apiPostText({ action: inBetween ? "search_song_word" : "search", search_term: searchTerm }),
-  
+    invokeJson("song-api", { action: inBetween ? "search_song_word" : "search", search_term: searchTerm }),
+
   getSong: (songName: string) =>
-    apiPostJson({ action: "get_song", song_name: songName }),
-  
+    invokeJson("song-api", { action: "get_song", song_name: songName }),
+
   saveSong: (songName: string, editedSong: string) =>
-    apiPostText({ action: "save_edited_song", song_name: songName, edited_song: editedSong }),
-  
+    invokeText("song-api", { action: "save_edited_song", song_name: songName, edited_song: editedSong }),
+
   addSong: (name: string, content: string, english: string, url: string) =>
-    apiPostText({
+    invokeText("song-api", {
       action: "save_new_song",
       new_song_name: name,
       new_song_content: content,
       new_song_english: english,
       new_song_URL: url,
     }),
-  
+
   deleteSong: (songName: string) =>
-    apiPostText({ action: "delete_song", song_name: songName }),
-  
+    invokeText("song-api", { action: "delete_song", song_name: songName }),
+
   renameSong: (oldName: string, newName: string) =>
-    apiPostText({ action: "", old_name: oldName, name: newName }),
-  
+    invokeText("song-api", { action: "rename_song", old_name: oldName, name: newName }),
+
   clickLine: (name: string, line: string) =>
-    apiPostText({ action: "click_line", name, clicked_line: line }),
-  
+    invokeText("song-api", { action: "click_line", name, clicked_line: line }),
+
   clickSong: (name: string, song: string) =>
-    apiPostText({ action: "click_song", name, clicked_song: song }),
-  
+    invokeText("song-api", { action: "click_song", name, clicked_song: song }),
+
   stanza: (songName: string, line: string) =>
-    apiPostText({ action: "stanza", song_name: songName, clicked_line: line }),
+    invokeText("song-api", { action: "stanza", song_name: songName, clicked_line: line }),
 };
 
 // Schedule APIs
 export const scheduleApi = {
   scheduleSong: (songName: string) =>
-    apiPostText({ action: "schedule_song", song_name: songName }),
-  
+    invokeText("schedule-api", { action: "schedule_song", song_name: songName }),
+
   fetchScheduledSong: (songName: string) =>
-    apiPostJson({ action: "fetch_scheduled_song", song_name: songName }),
-  
+    invokeJson("schedule-api", { action: "fetch_scheduled_song", song_name: songName }),
+
   fetchOptions: () =>
-    apiPostJson({ action: "fetch_options" }),
-  
+    invokeJson("schedule-api", { action: "fetch_options" }),
+
   clearSchedule: () =>
-    apiPostText({ action: "clear-schedule" }),
-  
+    invokeText("schedule-api", { action: "clear-schedule" }),
+
   clearScheduledSong: (songName: string) =>
-    apiPostJson({ action: "clear_scheduled_song", song_name: songName }),
+    invokeJson("schedule-api", { action: "clear_scheduled_song", song_name: songName }),
 };
 
 // Verse APIs
 export const verseApi = {
   display: (bookNum: number, chNum: number, verseNum: number) =>
-    apiPostJson({ action: "display", bookNum, chNum, verseNum }),
-  
+    invokeJson("verse-api", { action: "display", bookNum, chNum, verseNum }),
+
   next: (bookNum: number, chNum: number, verseNum: number) =>
-    apiPostJson({ action: "next", bookNum, chNum, verseNum }),
-  
+    invokeJson("verse-api", { action: "next", bookNum, chNum, verseNum }),
+
   previous: (bookNum: number, chNum: number, verseNum: number) =>
-    apiPostJson({ action: "previous", bookNum, chNum, verseNum }),
-  
+    invokeJson("verse-api", { action: "previous", bookNum, chNum, verseNum }),
+
   highlight: (bookNum: number, chNum: number, verseNum: number, higlit: string) =>
-    apiPostJson({ action: "higlitbut", bookNum, chNum, verseNum, higlit }),
-  
+    invokeJson("verse-api", { action: "higlitbut", bookNum, chNum, verseNum, higlit }),
+
   searchChapter: (bookNum: number, chNum: number) =>
-    apiPostJson({ action: "searchChapter", bookNum, chNum }),
-  
+    invokeJson("verse-api", { action: "searchChapter", bookNum, chNum }),
+
   searchWord: (searchWord: string) =>
-    apiPostJson({ action: "searchword", searchWord }),
-  
+    invokeJson("verse-api", { action: "searchword", searchWord }),
+
   preview: (bookNum: number, chNum: number, verseNum: number) =>
-    apiPostJson({ action: "previewVerse", bookNum, chNum, verseNum }),
-  
+    invokeJson("verse-api", { action: "previewVerse", bookNum, chNum, verseNum }),
+
   clear: () =>
-    apiPostText({ action: "clear" }),
-  
+    invokeText("verse-api", { action: "clear" }),
+
   scheduleVerse: (bookNum: number, chNum: number, verseNum: number) =>
-    apiPostJson({ action: "scheduleverse", bookNum, chNum, verseNum }),
+    invokeJson("verse-api", { action: "scheduleverse", bookNum, chNum, verseNum }),
 };
 
-// History APIs  
+// History APIs
 export const historyApi = {
-  fetchVerseHistory: async () => {
-    const formData = new FormData();
-    formData.append("fetchHistory", "true");
-    const res = await fetch(API_BASE, { method: "POST", body: formData });
-    return res.json();
-  },
-  
-  fetchSongHistory: async () => {
-    const formData = new FormData();
-    formData.append("fetchSongHistorycall", "true");
-    const res = await fetch(API_BASE, { method: "POST", body: formData });
-    return res.json();
-  },
+  fetchVerseHistory: () =>
+    invokeJson("history-api", { action: "fetchHistory" }),
+
+  fetchSongHistory: () =>
+    invokeJson("history-api", { action: "fetchSongHistory" }),
 };
 
 // Sthothira Baligal API
 export const sthothiraApi = {
   display: (value: number) =>
-    apiPostJson({ action: "display-sthothira-button", value }),
-  
+    invokeJson("sthothira-api", { action: "display-sthothira-button", value }),
+
   previous: (value: number) =>
-    apiPostJson({ action: "previous-sthothira-button", value }),
-  
+    invokeJson("sthothira-api", { action: "previous-sthothira-button", value }),
+
   next: (value: number) =>
-    apiPostJson({ action: "next-sthothira-button", value }),
+    invokeJson("sthothira-api", { action: "next-sthothira-button", value }),
 };
