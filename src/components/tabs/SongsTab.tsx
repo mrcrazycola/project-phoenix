@@ -113,7 +113,7 @@ const SongsTab = ({ onPresent }: SongsTabProps) => {
 
       {/* Search Results */}
       {hasSearched && (
-        <div className="glass-card rounded-xl p-4">
+        <div className="glass-card rounded-xl p-4 max-h-[400px] overflow-auto">
           <h3 className="text-sm font-semibold text-muted-foreground mb-3">
             Search Results ({searchResults.length})
           </h3>
