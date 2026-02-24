@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Monitor, ChevronLeft, ChevronRight, Eraser, Calendar, BookOpen, Highlighter, Search } from "lucide-react";
 import { TAMIL_BOOKS, BOOK_CHAPTER_LIMITS } from "@/lib/bible-data";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface VerseTabProps {
   onPresent: (title: string, content: string) => void;
@@ -50,20 +51,32 @@ const VerseTab = ({ onPresent }: VerseTabProps) => {
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
             Book
           </label>
-          <select
-            value={bookNum}
-            onChange={(e) => {
-              setBookNum(e.target.value ? Number(e.target.value) : "");
+          <Select
+            value={bookNum ? String(bookNum) : undefined}
+            onValueChange={(val) => {
+              setBookNum(val ? Number(val) : "");
               setChNum("");
               setVerseNum("");
             }}
-            className="w-full px-4 py-2.5 rounded-lg bg-background border border-border text-sm font-tamil focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all"
           >
-            <option value="">-- Select Book --</option>
-            {Object.entries(TAMIL_BOOKS).map(([num, name]) => (
-              <option key={num} value={num}>{name}</option>
-            ))}
-          </select>
+            <SelectTrigger className="w-full px-4 py-2.5 rounded-lg bg-background border border-border text-sm font-tamil focus:ring-2 focus:ring-primary/40 transition-all h-auto">
+              <SelectValue placeholder="📖 -- Select Book --" />
+            </SelectTrigger>
+            <SelectContent className="max-h-72 bg-popover border border-border shadow-xl rounded-lg">
+              {Object.entries(TAMIL_BOOKS).map(([num, name]) => (
+                <SelectItem
+                  key={num}
+                  value={num}
+                  className="font-tamil text-sm cursor-pointer hover:bg-primary/10 focus:bg-primary/10 rounded-md transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground w-5 text-right">{num}.</span>
+                    {name}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
